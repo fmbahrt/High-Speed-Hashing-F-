@@ -5,15 +5,15 @@ module Hash =
     let MP : bigint = bigint(2) ** primePow - bigint(1)
 
     let fouruniversalcountsketch (a0 : bigint) (a1 : bigint)
-                                 (a2 : bigint) (a3 : biginit) (k : int32) = 
+                                 (a2 : bigint) (a3 : bigint) (k : int32) = 
         let h (x : bigint) : uint64 * uint64 = 
             // Use horners rules to compute polynomial
-            let y = a0 + x * (a1 + x * (a2 + x * a_3))
+            let yz = a0 + x * (a1 + x * (a2 + x * a3))
            
             // Same mod trick as multiply mod prime 
             //  love duplicated code TODO
-            let y0 : bigint = c &&& MP
-            let y1 : bigint = c >>> primePow
+            let y0 : bigint = yz &&& MP
+            let y1 : bigint = yz >>> primePow
             
             let mutable y : bigint = y0 + y1
             if (y >= MP) then y <- y - MP
@@ -27,7 +27,8 @@ module Hash =
             let s : bigint = (bigint 1) - (bigint 2) * b
 
             // Now cast to uint64 - because F# and collections
-            return ((uint64 h), (uint64 s))
+            ((uint64 h), (uint64 s))
+        h
 
     let multiplymodprime (a : bigint) (b : bigint) (l : int32) =
         let h (x : uint64) =
@@ -136,7 +137,14 @@ module HashTable =
         construct h l
 
     let constructMS (l : int32) = 
-        let a = rnd64 // TODO: HAS TO BE UNEVEN
+        let mutable a = rnd64
+
+        // a has to be odd
+        let one = 1UL
+        let two = 2UL
+        while (a % two) = one do
+            a <- rnd64
+
         let h = Hash.multiplyshift a l
         construct h l
 
@@ -156,13 +164,3 @@ module HashTable =
         let idx = int (t.h x)
         let chain = t.t.[idx]
         t.t.[idx] <- LeChain.increment chain x d
-
-//[<EntryPoint>]
-//let main args =
-//    let table = HashTable.constructMS 2
-//    printfn "a %A" (HashTable.get table (uint64 123210398))
-//    HashTable.set table (uint64 123210398) (uint64 123123)
-//    printfn "a %A" (HashTable.get table (uint64 123210398))
-//    //printfn "a %A" HashTable.rnd88
-//    //printfn "a %A" Hash.MP
-//    0
