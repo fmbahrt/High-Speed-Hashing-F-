@@ -6,10 +6,10 @@ module Hash =
 
     let fouruniversalcountsketch (a0 : bigint) (a1 : bigint)
                                  (a2 : bigint) (a3 : bigint) (k : int32) = 
-        let h (x : bigint) : uint64 * uint64 = 
+        let h (x : uint64) : uint64 * int64 = 
+            let x : bigint = bigint x
             // Use horners rules to compute polynomial
             let yz = a0 + x * (a1 + x * (a2 + x * a3))
-           
             // Same mod trick as multiply mod prime 
             //  love duplicated code TODO
             let y0 : bigint = yz &&& MP
@@ -26,8 +26,10 @@ module Hash =
             let b : bigint = yprime &&& (bigint 1)
             let s : bigint = (bigint 1) - (bigint 2) * b
 
+            let hx : uint64 = uint64 h
+            let sx : int64 = int64 s // Does not have to be int64 (only sign)
             // Now cast to uint64 - because F# and collections
-            ((uint64 h), (uint64 s))
+            (hx, sx)
         h
 
     let multiplymodprime (a : bigint) (b : bigint) (l : int32) =
